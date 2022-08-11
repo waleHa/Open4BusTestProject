@@ -1,7 +1,8 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import Header from "./Components/Layout/Header";
 import Products from "./Components/Products/Products";
 import Cart from "./Components/Cart/Cart";
+import CartProvider from "./store/CartProvider";
 function App() {
   const [cartIsShown, setCartIsShown] = useState(false);
   const showCartHandle = () => {
@@ -10,14 +11,17 @@ function App() {
   const hideCartHandle = () => {
     setCartIsShown(false);
   };
+  //Cart Shows Window with Items and Total Amount
+  //Header shows header and cart button
+  //Products show  <AvailableProducts /> and <ProductSummary />
   return (
-    <Fragment>
-      {cartIsShown && <Cart onHideCart={hideCartHandle}/>}
+    <CartProvider>
+      {cartIsShown && <Cart onHideCart={hideCartHandle} />}
       <Header onShowCart={showCartHandle} />
       <main>
         <Products />
       </main>
-    </Fragment>
+    </CartProvider>
   );
 }
 
