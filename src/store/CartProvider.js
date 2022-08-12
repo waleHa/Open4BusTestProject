@@ -4,7 +4,7 @@ import CartContext from "./cart-context";
 //To manage the items in the cart we user useReducer and cartReducer
 //no need to create it every time CartProvider is called and it is independent
 //2:initialState
-const defaultCartState = { items: [], totalAmount: 0 };
+const defaultCartState = { item: [], totalAmount: 0 };
 
 //1:reducerFn: action is connected to dispatchCartAction
 const cartReducer = (state, action) => {
