@@ -13,9 +13,9 @@ const cartReducer = (state, action) => {
     const updatedItems = state.items.concat(action.item);
     //Concat Vs Push: Concat will return a new array with the new value and does not add it to the used one
     const updatedAmount =
-      state.items.totalAmount + action.item.price * action.item.amount;
-    return { items: updatedItems, amount: updatedAmount };
-  } else if (action.type === "REMOVE") {
+      state.totalAmount + action.item.price * action.item.amount;
+    return { items: updatedItems, totalAmount: updatedAmount };
+  } else if (action.type == "REMOVE") {
   }
   return defaultCartState;
 };
