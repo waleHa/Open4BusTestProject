@@ -1,58 +1,78 @@
-import { useReducer } from "react";
-import CartContext from "./cart-context";
+import { useReducer } from 'react';
 
-//To manage the items in the cart we user useReducer and cartReducer
-//no need to create it every time CartProvider is called and it is independent
-//2:initialState
-const defaultCartState = { items: [], totalAmount: 0 };
+import CartContext from './cart-context';
 
-//1:reducerFn: action is connected to dispatchCartAction
+const defaultCartState = {
+  items: [],
+  totalAmount: 0,
+};
+
 const cartReducer = (state, action) => {
-  //***To do: check is the item part of the array??
-  if (action.type === "ADD") {
-    const updatedAmount =
-      state.totalAmount + action.item.price * action.item.amount;
-    //#####NEW The following is for checking if the item is already available
-    const exitstingCartItemIndex = state.items.findIndex(
-      (item) => state.id == action.item.id
+
+  if (action.type === 'ADD') {
+    const updatedTotalAmount = state.totalAmount + action.item.price * action.item.amount;
+
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.item.id
     );
-    const exitstingCartItem = state.items[exitstingCartItemIndex];
+    const existingCartItem = state.items[existingCartItemIndex];
     let updatedItems;
-    if (exitstingCartItem) {
+
+    if (existingCartItem) {
       const updatedItem = {
-        ...exitstingCartItem,
-        amount: exitstingCartItem.amount + action.item.amount,
+        ...existingCartItem,
+        amount: existingCartItem.amount + action.item.amount,
       };
       updatedItems = [...state.items];
-      updatedItems[exitstingCartItemIndex] = updatedItem;
+      updatedItems[existingCartItemIndex] = updatedItem;
     } else {
-      //Concat Vs Push: Concat will return a new array with the new value and does not add it to the used one
       updatedItems = state.items.concat(action.item);
     }
 
-
-    return { items: updatedItems, totalAmount: updatedAmount };
-  } else if (action.type == "REMOVE") {
+    return {
+      items: updatedItems,
+      totalAmount: updatedTotalAmount,
+    };
   }
+  if (action.type === 'REMOVE') {
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.id
+    );
+    const existingItem = state.items[existingCartItemIndex];
+    const updatedTotalAmount = state.totalAmount - existingItem.price;
+    let updatedItems;
+    if (existingItem.amount === 1) {
+      updatedItems = state.items.filter(item => item.id !== action.id);
+    } else {
+      const updatedItem = { ...existingItem, amount: existingItem.amount - 1 };
+      updatedItems = [...state.items];
+      updatedItems[existingCartItemIndex] = updatedItem;
+    }
+
+    return {
+      items: updatedItems,
+      totalAmount: updatedTotalAmount
+    };
+  }
+
   return defaultCartState;
 };
 
 const CartProvider = (props) => {
-  //3:****************** The Base
   const [cartState, dispatchCartAction] = useReducer(
     cartReducer,
     defaultCartState
   );
+
   const addItemToCartHandler = (item) => {
-    //5:use dispatchFn: property to identify the action inside the reducer func- so differenct actions run depending on dispactch property
-    dispatchCartAction({ type: "ADD", item: item }); //ALL CAPS //Item is forwarded
+    dispatchCartAction({ type: 'ADD', item: item });
   };
+
   const removeItemFromCartHandler = (id) => {
-    //5:use dispatchFn:
-    dispatchCartAction({ type: "REMOVE", id: id });
+    dispatchCartAction({ type: 'REMOVE', id: id });
   };
+
   const cartContext = {
-    //4:
     items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemToCartHandler,
